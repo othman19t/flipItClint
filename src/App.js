@@ -1,106 +1,63 @@
 import React, { useState, useEffect } from 'react';
 import io from 'socket.io-client';
-
+import axios from 'axios';
 const socket = io('http://localhost:3001/socket');
 
 function App() {
-  const [privateMessage, setPrivateMessage] = useState('');
-  const [groupMessage, setGroupMessage] = useState('');
-  const [receivedMessages, setReceivedMessages] = useState([]);
-  const [con, setCon] = useState(true);
-
-  const handleConnect = () => {
-    socket.connect();
-    setCon(true);
+  let [notification, setNotification] = useState([]);
+  // Function to get posts
+  const getNewPosts = async (postIds) => {
+    console.log('getNewPosts running');
+    try {
+      const response = await axios.get(
+        `http://localhost:4000/api/post/posts?ids=${postIds.join(',')}`
+      );
+      console.log('response.data getposts', response.data); // Handle the response data as needed
+      //TODO: @basil12345 => diplay this data response.data.posts
+      return response.data;
+    } catch (error) {
+      console.error('There was an error fetching the posts:', error);
+      // Handle the error appropriately
+    }
   };
 
-  const handleDisconnect = () => {
-    socket.disconnect();
-    setCon(false);
+  const checkForNotifications = () => {
+    console.log('checking for updates...');
+    socket.emit(
+      'getData',
+      {
+        myData: 'This is data from the client',
+        userId: '65c42628634a0830211559f8',
+        message:
+          'use this id to get unread notifications that contains ids to new posts send these ids to api to get the data and send it to clint to display',
+      },
+      function (response) {
+        let postIds = [];
+        response.map((ele) => {
+          postIds.push(ele.postLocalId);
+        });
+        console.log('postIds: ', postIds);
+
+        getNewPosts(postIds);
+        // Handle response from the server
+
+        console.log('response', response);
+      }
+    );
   };
-  // useEffect(() => {
-  // socket.on('connect', () => {
-  //   console.log('connect');
-  // });
+  useEffect(() => {
+    checkForNotifications();
+    const intervalId = setInterval(() => {
+      console.log('running useEffect');
+      checkForNotifications();
+    }, 20000);
 
-  socket.emit('clientEvent', {
-    myData: 'This is data from the client',
-    userId: '1',
-    message:
-      'use this id to get unread notifications that contains ids to new posts send these ids to api to get the data and send it to clint to display',
-  });
-  // Listen for a response from the server
-  socket.on('serverResponse', (data) => {
-    console.log(data);
-  });
+    return () => clearInterval(intervalId); // Clean up the interval on unmount
+  }, []);
 
-  // socket.on('disconnect', () => {
-  //   console.log('disconnect');
-  // });
+  useEffect(() => {}, [notification]);
 
-  // Listen for private messages
-  socket.on('privateMessage', (message) => {
-    setReceivedMessages((prevMessages) => [...prevMessages, message]);
-  });
-
-  // Listen for group messages
-  socket.on('groupMessage', (message) => {
-    setReceivedMessages((prevMessages) => [...prevMessages, message]);
-  });
-  // }, []);
-
-  const handlePrivateMessage = () => {
-    // Send private message to recipient
-    const recipient = ''; // Replace with recipient's socket ID
-    const message = privateMessage;
-    socket.emit('privateMessage', { recipient, message });
-    setPrivateMessage('');
-  };
-
-  const handleGroupMessage = () => {
-    // Send group message
-    const message = groupMessage;
-    socket.emit('groupMessage', message);
-    setGroupMessage('');
-  };
-
-  return (
-    <div>
-      {con ? (
-        <button style={{ background: 'green' }} onClick={handleDisconnect}>
-          Disconnect
-        </button>
-      ) : (
-        <button style={{ background: 'red' }} onClick={handleConnect}>
-          Connect
-        </button>
-      )}
-
-      <h1>Chat Application</h1>
-      <h2>Private Messages</h2>
-      <input
-        type='text'
-        value={privateMessage}
-        onChange={(e) => setPrivateMessage(e.target.value)}
-      />
-      <button onClick={handlePrivateMessage}>Send Private Message</button>
-
-      <h2>Group Messages</h2>
-      <input
-        type='text'
-        value={groupMessage}
-        onChange={(e) => setGroupMessage(e.target.value)}
-      />
-      <button onClick={handleGroupMessage}>Send Group Message</button>
-
-      <h2>Received Messages</h2>
-      <ul>
-        {receivedMessages.map((message, index) => (
-          <li key={index}>{message}</li>
-        ))}
-      </ul>
-    </div>
-  );
+  return <div>hello world</div>;
 }
 
 export default App;
