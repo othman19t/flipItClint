@@ -34,7 +34,7 @@ function App() {
       function (response) {
         let postIds = [];
         response.map((ele) => {
-          postIds.push(ele._id);
+          postIds.push(ele.postLocalId);
         });
         console.log('postIds: ', postIds);
 
