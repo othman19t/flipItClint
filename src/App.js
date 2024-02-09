@@ -19,7 +19,7 @@ function App() {
       );
       console.log("response.data getposts", response.data); // Handle the response data as needed
       //TODO: @basil12345 => diplay this data response.data.posts / DONE /
-      setPosts(response?.data?.posts);
+      setPosts((perv) => [...response?.data?.posts, ...perv]);
       return response.data;
     } catch (error) {
       console.error("There was an error fetching the posts:", error);
@@ -52,7 +52,7 @@ function App() {
     );
   };
   useEffect(() => {
-    checkForNotifications();
+    // checkForNotifications();
     const intervalId = setInterval(() => {
       console.log("running useEffect");
       checkForNotifications();
@@ -65,7 +65,7 @@ function App() {
 
   return (
     <div className="app">
-      <h1 className="posts-header">Posts</h1>
+      <h1 className="posts-header">Posts {posts.length}</h1>
 
       <div className="posts">
         {posts.map((post) => (
