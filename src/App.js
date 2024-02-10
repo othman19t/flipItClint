@@ -10,6 +10,19 @@ const socket = io('http://localhost:3001/socket');
 function App() {
   let [notification, setNotification] = useState([]);
   let [posts, setPosts] = useState([]);
+  const getInitialPostings = async (userId) => {
+    console.log('getNewPosts running');
+    try {
+      const response = await axios.get(
+        `http://localhost:4000/api/post/all/${userId}`
+      );
+      console.log('initial posts', response.data.length); // Handle the response data as needed
+      setPosts(response.data.posts);
+    } catch (error) {
+      console.error('There was an error fetching the posts:', error);
+      // Handle the error appropriately
+    }
+  };
   // Function to get posts
   const getNewPosts = async (postIds) => {
     console.log('getNewPosts running');
@@ -54,7 +67,7 @@ function App() {
     );
   };
   useEffect(() => {
-    // checkForNotifications();
+    getInitialPostings('65c42628634a0830211559f8');
     const intervalId = setInterval(() => {
       console.log('running useEffect');
       checkForNotifications();
