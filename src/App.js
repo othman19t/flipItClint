@@ -1,21 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import io from 'socket.io-client';
 import axios from 'axios';
-
 import Card from './components/card';
 import './App.css';
 
-const socket = io('http://localhost:3001/socket');
-
+//REACT_APP_EVENT_BUS
+const client = process.env.REACT_APP_CLIENT;
+const envetBus = process.env.REACT_APP_EVENT_BUS;
+const api = process.env.REACT_APP_API;
+const scrapper = process.env.REACT_APP_SCRAPPER;
+const socket = io(`${envetBus}/socket`);
 function App() {
   let [notification, setNotification] = useState([]);
   let [posts, setPosts] = useState([]);
   const getInitialPostings = async (userId) => {
     console.log('getNewPosts running');
     try {
-      const response = await axios.get(
-        `http://localhost:4000/api/post/all/${userId}`
-      );
+      const response = await axios.get(`${api}/api/post/all/${userId}`);
       console.log('initial posts', response.data.length); // Handle the response data as needed
       setPosts(response.data.posts);
     } catch (error) {
@@ -28,7 +29,7 @@ function App() {
     console.log('getNewPosts running');
     try {
       const response = await axios.get(
-        `http://localhost:4000/api/post/posts?ids=${postIds.join(',')}`
+        `${api}/api/post/posts?ids=${postIds.join(',')}`
       );
       console.log('response.data getposts', response.data); // Handle the response data as needed
       //TODO: @basil12345 => diplay this data response.data.posts / DONE /
