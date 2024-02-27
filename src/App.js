@@ -4,12 +4,12 @@ import axios from 'axios';
 import Card from './components/card';
 import './App.css';
 
-//REACT_APP_EVENT_BUS
+//REACT_APP_EVENT_BUzz
 const client = process.env.REACT_APP_CLIENT;
-const envetBus = process.env.REACT_APP_EVENT_BUS;
+const envetBuzz = process.env.REACT_APP_EVENT_BUZZ;
 const api = process.env.REACT_APP_API;
 const scrapper = process.env.REACT_APP_SCRAPPER;
-const socket = io(`${envetBus}/socket`);
+const socket = io(`${envetBuzz}/socket`);
 function App() {
   let [notification, setNotification] = useState([]);
   let [posts, setPosts] = useState([]);
