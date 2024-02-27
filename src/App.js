@@ -4,7 +4,7 @@ import axios from 'axios';
 import Card from './components/card';
 import './App.css';
 
-//REACT_APP_EVENT_BUzz
+//REACT_APP_EVENT_BUZZ
 const client = process.env.REACT_APP_CLIENT;
 const envetBuzz = process.env.REACT_APP_EVENT_BUZZ;
 const api = process.env.REACT_APP_API;
