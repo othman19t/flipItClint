@@ -4,6 +4,7 @@ import axios from 'axios';
 import InfiniteScroll from 'react-infinite-scroll-component';
 
 import Card from './components/card';
+import NotificationBtn from './components/notificationBtn';
 import './App.css';
 
 //REACT_APP_EVENT_BUZZ
@@ -14,7 +15,7 @@ const scrapper = process.env.REACT_APP_SCRAPPER;
 const socket = io(`${envetBuzz}/socket`);
 function App() {
   let [notification, setNotification] = useState([]);
-  let [posts, setPosts] = useState([]);
+  const [posts, setPosts] = useState([]);
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(1);
   const [newNotification, setNewNotification] = useState(false);
@@ -54,18 +55,24 @@ function App() {
       function (response) {
         if (response?.length > 0) {
           console.log('response', response);
-          setPosts((perv) => [...response, ...perv]);
-          // setPosts((prev) => [...prev, ...response]);
-          // setPosts(response);
+          // setPosts((perv) => [...response, ...perv]);
+          setPosts((prev) => response.concat(prev));
           setNewNotification(true);
-          setNewNotificationCount(response?.length);
+          setNewNotificationCount(response?.length + newNotificationCount);
         }
       }
     );
   };
-
   useEffect(() => {
-    fetchMoreData();
+    console.log('posts', posts);
+  }, [posts]);
+  let initalLoadHappend = false;
+  useEffect(() => {
+    if (!initalLoadHappend) {
+      fetchMoreData();
+      initalLoadHappend = true;
+    }
+
     const intervalId = setInterval(() => {
       console.log('running useEffect');
       checkForNotifications();
@@ -74,11 +81,8 @@ function App() {
     return () => clearInterval(intervalId); // Clean up the interval on unmount
   }, []);
 
-  useEffect(() => {
-    console.log('posts', posts);
-  }, [posts]);
-
   const scrollToTop = () => {
+    setNewNotificationCount(0);
     window.scrollTo({
       top: 0,
       behavior: 'smooth',
@@ -87,12 +91,13 @@ function App() {
 
   return (
     <div className='app'>
-      <h1 className='posts-header'>Posts {posts.length}</h1>
+      <h1 className='posts-header'> {posts.length}</h1>
 
-      {newNotification && (
-        <button className='new-notification-btn' onClick={scrollToTop}>
-          ^ new notification ({newNotificationCount})
-        </button>
+      {newNotificationCount > 0 && (
+        <NotificationBtn
+          numberOfNotifications={newNotificationCount}
+          onClick={scrollToTop}
+        />
       )}
 
       <InfiniteScroll
@@ -108,7 +113,7 @@ function App() {
       >
         <div className='posts'>
           {posts.map((post, idx) => (
-            <Card key={idx} post={post.postLocalId} />
+            <Card key={post.postLocalId._id} post={post.postLocalId} />
           ))}
         </div>
       </InfiniteScroll>
