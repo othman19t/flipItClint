@@ -113,7 +113,7 @@ function App() {
       >
         <div className='posts'>
           {posts.map((post, idx) => (
-            <Card key={post.postLocalId._id} post={post.postLocalId} />
+            <Card key={`${post._id}${idx}`} post={post.postLocalId} />
           ))}
         </div>
       </InfiniteScroll>
