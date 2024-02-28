@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
-import io from "socket.io-client";
-import axios from "axios";
-import InfiniteScroll from "react-infinite-scroll-component";
+import React, { useState, useEffect } from 'react';
+import io from 'socket.io-client';
+import axios from 'axios';
+import InfiniteScroll from 'react-infinite-scroll-component';
 
-import Card from "./components/card";
-import "./App.css";
+import Card from './components/card';
+import './App.css';
 
 //REACT_APP_EVENT_BUZZ
 const client = process.env.REACT_APP_CLIENT;
@@ -22,7 +22,7 @@ function App() {
 
   const fetchMoreData = async () => {
     try {
-      const userId = "65c42628634a0830211559f8";
+      const userId = '65c42628634a0830211559f8';
 
       const response = await axios.get(
         `${api}/api/post/all/${userId}?page=${page}`
@@ -37,53 +37,29 @@ function App() {
 
       setPage((prevPage) => prevPage + 1);
     } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
-
-  // Function to get posts
-  const getNewPosts = async (postIds) => {
-    console.log("getNewPosts running");
-    try {
-      const response = await axios.get(
-        `${api}/api/post/posts?ids=${postIds.join(",")}`
-      );
-      console.log("response.data getposts", response.data); // Handle the response data as needed
-      //TODO: @basil12345 => diplay this data response.data.posts / DONE /
-      setPosts((perv) => [...response?.data?.posts, ...perv]);
-
-      setNewNotification(true);
-      setNewNotificationCount(...response?.data?.lenght);
-      return response.data;
-    } catch (error) {
-      console.error("There was an error fetching the posts:", error);
-      // Handle the error appropriately
+      console.error('Error fetching data:', error);
     }
   };
 
   const checkForNotifications = () => {
-    console.log("checking for updates...");
+    console.log('checking for updates...');
     socket.emit(
-      "getData",
+      'getData',
       {
-        myData: "This is data from the client",
-        userId: "65c42628634a0830211559f8",
+        myData: 'This is data from the client',
+        userId: '65c42628634a0830211559f8',
         message:
-          "use this id to get unread notifications that contains ids to new posts send these ids to api to get the data and send it to clint to display",
+          'use this id to get unread notifications that contains ids to new posts send these ids to api to get the data and send it to clint to display',
       },
       function (response) {
-        let postIds = [];
-        response.map((ele) => {
-          postIds.push(ele.postLocalId);
-        });
-        console.log("postIds: ", postIds);
-        if (postIds.length > 0) {
-          getNewPosts(postIds);
+        if (response?.length > 0) {
+          console.log('response', response);
+          setPosts((perv) => [...response, ...perv]);
+          // setPosts((prev) => [...prev, ...response]);
+          // setPosts(response);
+          setNewNotification(true);
+          setNewNotificationCount(response?.length);
         }
-
-        // Handle response from the server
-
-        console.log("response", response);
       }
     );
   };
@@ -91,28 +67,30 @@ function App() {
   useEffect(() => {
     fetchMoreData();
     const intervalId = setInterval(() => {
-      console.log("running useEffect");
+      console.log('running useEffect');
       checkForNotifications();
-    }, 60000);
+    }, 10000);
 
     return () => clearInterval(intervalId); // Clean up the interval on unmount
   }, []);
 
-  useEffect(() => {}, [notification]);
+  useEffect(() => {
+    console.log('posts', posts);
+  }, [posts]);
 
   const scrollToTop = () => {
     window.scrollTo({
       top: 0,
-      behavior: "smooth",
+      behavior: 'smooth',
     });
   };
 
   return (
-    <div className="app">
-      <h1 className="posts-header">Posts {posts.length}</h1>
+    <div className='app'>
+      <h1 className='posts-header'>Posts {posts.length}</h1>
 
       {newNotification && (
-        <button className="new-notification-btn" onClick={scrollToTop}>
+        <button className='new-notification-btn' onClick={scrollToTop}>
           ^ new notification ({newNotificationCount})
         </button>
       )}
@@ -123,12 +101,12 @@ function App() {
         hasMore={hasMore}
         loader={<h4>Loading...</h4>}
         endMessage={
-          <p style={{ textAlign: "center" }}>
+          <p style={{ textAlign: 'center' }}>
             <b>You have seen it all</b>
           </p>
         }
       >
-        <div className="posts">
+        <div className='posts'>
           {posts.map((post, idx) => (
             <Card key={idx} post={post.postLocalId} />
           ))}
