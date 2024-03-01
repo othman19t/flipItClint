@@ -14,13 +14,30 @@ const api = process.env.REACT_APP_API;
 const scrapper = process.env.REACT_APP_SCRAPPER;
 const socket = io(`${envetBuzz}/socket`);
 function App() {
-  let [notification, setNotification] = useState([]);
+  const [scrollPosition, setScrollPosition] = useState({ x: 0, y: 0 });
   const [posts, setPosts] = useState([]);
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(1);
   const [newNotification, setNewNotification] = useState(false);
   const [newNotificationCount, setNewNotificationCount] = useState(0);
 
+  useEffect(() => {
+    const updateScrollPosition = () => {
+      setScrollPosition({ x: window.scrollX, y: window.scrollY });
+    };
+
+    // Attach scroll event listener to window
+    window.addEventListener('scroll', updateScrollPosition);
+
+    // Cleanup listener on component unmount
+    return () => window.removeEventListener('scroll', updateScrollPosition);
+  }, []); // Empty dependency array means this effect runs only once on mount
+
+  useEffect(() => {
+    if (scrollPosition.y < 100) {
+      setNewNotificationCount(0);
+    }
+  }, [scrollPosition]);
   const fetchMoreData = async () => {
     try {
       const userId = '65c42628634a0830211559f8';
@@ -53,9 +70,9 @@ function App() {
           'use this id to get unread notifications that contains ids to new posts send these ids to api to get the data and send it to clint to display',
       },
       function (response) {
+        console.log('response', response);
         if (response?.length > 0) {
           console.log('response', response);
-          // setPosts((perv) => [...response, ...perv]);
           setPosts((prev) => response.concat(prev));
           setNewNotification(true);
           setNewNotificationCount(response?.length + newNotificationCount);
@@ -91,7 +108,7 @@ function App() {
 
   return (
     <div className='app'>
-      <h1 className='posts-header'> {posts.length}</h1>
+      <h1 className='posts-header'>{posts.length}</h1>
 
       {newNotificationCount > 0 && (
         <NotificationBtn
