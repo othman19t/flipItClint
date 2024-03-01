@@ -35,7 +35,8 @@
 }
 
 .card-info {
-  padding: 10px;
+  padding: 0 10px 10px 20px;
+  height: 170px;
 }
 
 .card-info h3 {
@@ -46,13 +47,45 @@
   margin: 5px 0;
 }
 
+.tags_and_location {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.tag_con {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 140px;
+}
+.card_distance {
+  background-color: #fc5c65;
+  color: #fff;
+  width: 65px;
+  text-align: center;
+  padding: 5px 0;
+  border-radius: 7px;
+  font-weight: bold;
+  margin-right: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+.card_price {
+  background-color: #4ecdc4;
+  color: #fff;
+  width: 65px;
+  text-align: center;
+  padding: 5px 0;
+  border-radius: 7px;
+  font-weight: bold;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
 .notification_btn {
   position: fixed;
   right: 10px;
   top: 80%;
   transform: translateY(-50%);
   padding: 10px;
-  background-color: tomato;
+  background-color: #fc5c65;
   color: #fff;
   border: none;
   cursor: pointer;
@@ -64,6 +97,28 @@
   padding-right: 5px;
   font-weight: bold;
 }
+.card_title {
+  margin: 5px 0;
+  font-size: 18px;
+  font-weight: bold;
+}
+p.card_description {
+  overflow: hidden; /* Hide text that goes beyond the box */
+  text-overflow: ellipsis; /* Add ellipsis at the end of the text */
+  margin-top: 15px;
+}
+/* {
+  primary: '#fc5c65',
+  secondary: '#4ecdc4',
+  black: '#000',
+  white: '#fff',
+  midGray: '#6e6969',
+  lightGray: '#f8f4f4',
+  danger: '#ff5252',
+  warning: '#ffe66d',
+  darkGray: '#0c0c0c',
+}; */
+
 /* @media (prefers-reduced-motion: no-preference) {
   .App-logo {
     animation: App-logo-spin infinite 20s linear;
